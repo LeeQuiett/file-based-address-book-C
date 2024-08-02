@@ -77,7 +77,7 @@ void search_by_addr(void) {
 	char addr[100];
 	print_message("Enter the address to search: ");
 	fgets(addr, sizeof(addr), stdin);
-	addr[strcspn(addr, "\n")] = '\0';  // Remove newline character
+	addr[strcspn(addr, "\n")] = '\0';
 
 	FILE* fp = fopen(FILENAME, "rb");
 	if (fp == NULL) {
@@ -101,48 +101,84 @@ void search_by_addr(void) {
 
 	fclose(fp);
 }
+
+int count_and_or(const char* str, const char* word) {
+	int count = 0;
+	const char* pos = str;
+
+	while ((pos = strstr(pos, word)) != NULL) {
+		count++;
+		pos += strlen(word);
+	}
+	return count;
+}
+
+int find_substring_position(const char* str, const char* sub) {
+	const char* pos = strstr(str, sub);
+
+	if (pos != NULL) {
+		return (int)(pos - str);
+	}
+	else {
+		return -1;
+	}
+}
+
 void search_by_SQL(void) {
 	char query[256];
 	print_message("Enter your search query: ");
 	fgets(query, sizeof(query), stdin);
 	query[strcspn(query, "\n")] = '\0';
 
-	//쿼리가 'field=value' 형태라고 가정
-	char field[50], value[200];
-	sscanf(query, "%[^=]=%s", field, value);
+	int and_count = count_and_or(query, " and ");
+	int or_count = count_and_or(query, " or ");
+	
+	if (and_count == 0 && or_count == 0) {
+		char field[50], value[200];
+		sscanf(query, "%[^=]=%s", field, value);
 
-	FILE* fp = fopen(FILENAME, "rb");
-	if (fp == NULL) {
-		perror("Failed to open file for reading");
-		return;
+		FILE* fp = fopen(FILENAME, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
+			int match = 0;
+			if (strcmp(field, "name") == 0 && strcmp(addr.name, value) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field, "tel") == 0 && strcmp(addr.tel, value) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field, "addr") == 0 && strcmp(addr.addr, value) == 0) {
+				match = 1;
+			}
+
+			if (match) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				found = 1;
+			}
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+
+		fclose(fp);
 	}
+	else if (and_count > 0 && or_count == 0) {
 
-	Addr addr;
-	int found = 0;
-	while (fread(&addr, sizeof(Addr), 1, fp)) {
-		int match = 0;
-		if (strcmp(field, "name") == 0 && strcmp(addr.name, value) == 0) {
-			match = 1;
-		}
-		else if (strcmp(field, "tel") == 0 && strcmp(addr.tel, value) == 0) {
-			match = 1;
-		}
-		else if (strcmp(field, "addr") == 0 && strcmp(addr.addr, value) == 0) {
-			match = 1;
-		}
-
-		if (match) {
-			print_message("Contact found:\n");
-			printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
-			found = 1;
-		}
 	}
+	else if (and_count == 0 && or_count > 0) {
 
-	if (!found) {
-		print_message("Contact not found.\n");
 	}
-
-	fclose(fp);
+	else {
+		puts("Unsupported operation! Try again!");
+	}
 }
 //메모리에 로드X
 /*
