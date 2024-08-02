@@ -6,6 +6,7 @@
 
 //Node* head = NULL; 메모리에 로드X
 
+/*add_addr_controller*/
 void add_addr(const char* filename, Addr* addr) {
 	FILE* fp = fopen(filename, "ab");
 	if (fp == NULL) {
@@ -18,6 +19,7 @@ void add_addr(const char* filename, Addr* addr) {
 
 
 /*search_addr_controller*/
+/*이름으로 검색*/
 void search_by_name(void) {
 	char name[30];
 	print_message("Enter the name to search: ");
@@ -46,6 +48,7 @@ void search_by_name(void) {
 
 	fclose(fp);
 }
+/*전화번호로 검색*/
 void search_by_tel(void) {
 	char tel[30];
 	print_message("Enter the tel to search: ");
@@ -72,7 +75,7 @@ void search_by_tel(void) {
 	}
 	fclose(fp);
 
-}
+}/*주소로 검색*/
 void search_by_addr(void) {
 	char addr[100];
 	print_message("Enter the address to search: ");
@@ -101,7 +104,7 @@ void search_by_addr(void) {
 
 	fclose(fp);
 }
-
+/*문자열 내 서브 문자열의 수를 카운트*/
 int count_and_or(const char* str, const char* word) {
 	int count = 0;
 	const char* pos = str;
@@ -112,7 +115,7 @@ int count_and_or(const char* str, const char* word) {
 	}
 	return count;
 }
-
+/*서브 문자열의 위치를 검색*/
 int find_substring_position(const char* str, const char* sub) {
 	const char* pos = strstr(str, sub);
 
@@ -123,7 +126,7 @@ int find_substring_position(const char* str, const char* sub) {
 		return -1;
 	}
 }
-
+/*쿼리 파싱*/
 void parse_query(const char* query, char* query1, char* query2, char* and_or) {
 	int pos = find_substring_position(query, and_or);
 	if (pos != -1) {
@@ -132,7 +135,7 @@ void parse_query(const char* query, char* query1, char* query2, char* and_or) {
 		strcpy(query2, query + pos + strlen(and_or));
 	}
 }
-
+/*SQL 스타일 검색*/
 void search_by_SQL(void) {
 	char query[256];
 	char query1[256], query2[256];
@@ -143,7 +146,7 @@ void search_by_SQL(void) {
 
 	int and_count = count_and_or(query, " and ");
 	int or_count = count_and_or(query, " or ");
-	
+	/*쿼리에 and나 or가 없을 경우*/
 	if (and_count == 0 && or_count == 0) {
 		char field[50], value[200];
 		sscanf(query, "%[^=]=%s", field, value);
@@ -181,6 +184,7 @@ void search_by_SQL(void) {
 
 		fclose(fp);
 	}
+	/*쿼리에 and가 1개 있는 경우*/
 	else if (and_count == 1 && or_count == 0) {
 		
 		parse_query(query, query1, query2, " and ");
@@ -240,6 +244,7 @@ void search_by_SQL(void) {
 		fclose(fp);
 
 	}
+	/*쿼리에 or가 1개 있는 경우*/
 	else if (and_count == 0 && or_count == 1) {
 		parse_query(query, query1, query2, " or ");
 		printf("Query1: %s\n", query1);
@@ -298,10 +303,20 @@ void search_by_SQL(void) {
 
 		fclose(fp);
 	}
+	/*쿼리에 and나 or가 1개 이상일 경우*/
 	else {
 		puts("Unsupported operation! Try again!");
 	}
 }
+
+/*print_addr_controller*/
+void print_addr() {
+	FILE* fp = fopen(FILENAME, "rb");
+	if (fp == NULL) {}
+}
+
+
+
 //메모리에 로드X
 /*
 Node* load_data_from_file(const char* filename) {

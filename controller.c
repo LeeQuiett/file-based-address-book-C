@@ -44,7 +44,7 @@ void search_addr_controller() {
 }
 
 void print_addr_controller() {
-
+    print_message("Print the entire address book\n\n");
 }
 
 void exit_addr_controller() {
