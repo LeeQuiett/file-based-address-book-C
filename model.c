@@ -124,8 +124,19 @@ int find_substring_position(const char* str, const char* sub) {
 	}
 }
 
+void parse_query(const char* query, char* query1, char* query2, char* and_or) {
+	int pos = find_substring_position(query, and_or);
+	if (pos != -1) {
+		strncpy(query1, query, pos);
+		query1[pos] = '\0';
+		strcpy(query2, query + pos + strlen(and_or));
+	}
+}
+
 void search_by_SQL(void) {
 	char query[256];
+	char query1[256], query2[256];
+	printf("쿼리 예: name=홍길동 and addr=서울시, tel=02-123-123 or addr=대전시\n\n");
 	print_message("Enter your search query: ");
 	fgets(query, sizeof(query), stdin);
 	query[strcspn(query, "\n")] = '\0';
@@ -170,11 +181,122 @@ void search_by_SQL(void) {
 
 		fclose(fp);
 	}
-	else if (and_count > 0 && or_count == 0) {
+	else if (and_count == 1 && or_count == 0) {
+		
+		parse_query(query, query1, query2, " and ");
+		printf("Query1: %s\n", query1);
+		printf("Query2: %s\n\n", query2);
+
+		char field[50], value[200];
+		char field2[50], value2[200];
+
+		sscanf(query1, "%[^=]=%s", field, value);
+		sscanf(query2, "%[^=]=%s", field2, value2);
+
+		FILE* fp = fopen(FILENAME, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
+			int match = 0;
+			if (strcmp(field, "name") == 0 && strcmp(addr.name, value) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field, "tel") == 0 && strcmp(addr.tel, value) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field, "addr") == 0 && strcmp(addr.addr, value) == 0) {
+				match = 1;
+			}
+
+			if (match) {
+				int match = 0;
+				if (strcmp(field2, "name") == 0 && strcmp(addr.name, value2) == 0) {
+					match = 1;
+				}
+				else if (strcmp(field2, "tel") == 0 && strcmp(addr.tel, value2) == 0) {
+					match = 1;
+				}
+				else if (strcmp(field2, "addr") == 0 && strcmp(addr.addr, value2) == 0) {
+					match = 1;
+				}
+
+				if (match) {
+					print_message("Contact found:\n");
+					printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+					found = 1;
+				}				
+			}
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+
+		fclose(fp);
 
 	}
-	else if (and_count == 0 && or_count > 0) {
+	else if (and_count == 0 && or_count == 1) {
+		parse_query(query, query1, query2, " or ");
+		printf("Query1: %s\n", query1);
+		printf("Query2: %s\n\n", query2);
 
+		char field[50], value[200];
+		char field2[50], value2[200];
+
+		sscanf(query1, "%[^=]=%s", field, value);
+		sscanf(query2, "%[^=]=%s", field2, value2);
+
+		FILE* fp = fopen(FILENAME, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
+			int match = 0;
+			if (strcmp(field, "name") == 0 && strcmp(addr.name, value) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field, "tel") == 0 && strcmp(addr.tel, value) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field, "addr") == 0 && strcmp(addr.addr, value) == 0) {
+				match = 1;
+			}
+			if (match) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				found = 1;
+			}
+			match = 0;
+			if (strcmp(field2, "name") == 0 && strcmp(addr.name, value2) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field2, "tel") == 0 && strcmp(addr.tel, value2) == 0) {
+				match = 1;
+			}
+			else if (strcmp(field2, "addr") == 0 && strcmp(addr.addr, value2) == 0) {
+				match = 1;
+			}
+			if (match) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				found = 1;
+			}
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+
+		fclose(fp);
 	}
 	else {
 		puts("Unsupported operation! Try again!");
