@@ -8,17 +8,17 @@ void add_addr_controller() {
 	Addr addr;
 	print_message("Enter name: ");
 	fgets(addr.name, sizeof(addr.name), stdin);
-	addr.name[strcpn(addr.name, '\n')] = '\0';
+	addr.name[strcspn(addr.name, '\n')] = '\0';
 	putchar('\n');
 
 	print_message("Enter tel: ");
 	fgets(addr.tel, sizeof(addr.tel), stdin);
-	addr.tel[strcpn(addr.tel, '\n')] == '\0';
+	addr.tel[strcspn(addr.tel, '\n')] == '\0';
 	putchar('\n');
 
 	print_message("Enter addr: ");
 	fgets(addr.addr, sizeof(addr.addr), stdin);
-	addr.addr[strcpn(addr.tel, '\n')] == '\0';
+	addr.addr[strcspn(addr.tel, '\n')] == '\0';
 	putchar('\n');
 
 	add_addr(FILENAME, &addr);

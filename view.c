@@ -1,5 +1,5 @@
 #include <stdio.h>
 
-void print_message(char* message) {
+void print_message(const char* message) {
 	printf("%s", message);
 }

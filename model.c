@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "header.h"
 
-typedef struct {
-	char name[30];
-	char tel[15];
-	char addr[100];
-} Addr;
+typedef struct Node {
+	Addr data;
+	struct Node* next;
+} Node;
+
+Node* head = NULL;
 
 void add_addr(const char* filename, Addr* addr) {
 	FILE* fp = fopen(filename, "ab");
@@ -16,4 +18,12 @@ void add_addr(const char* filename, Addr* addr) {
 	}
 	fwrite(addr, sizeof(Addr), 1, fp);
 	fclose(fp);
+}
+
+void delete_addr_from_name(const char* filename, const char* name) {
+
+}
+
+Node* load_data_from_file(const char* filename) {
+
 }
