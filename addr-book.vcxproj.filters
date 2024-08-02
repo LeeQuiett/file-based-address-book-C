@@ -28,4 +28,14 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="header.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="addr_book.dat">
+      <Filter>소스 파일</Filter>
+    </None>
+  </ItemGroup>
 </Project>
