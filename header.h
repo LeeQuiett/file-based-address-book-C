@@ -1,6 +1,6 @@
 #pragma once
 #define FILENAME "addr_book.dat"
-
+#define TEMP_FILENAME "temp.dat"
 //데이터 구조체 정의
 typedef struct {
     char name[30];
@@ -28,12 +28,12 @@ void search_addr_controller(void);
 void print_addr_controller(void);
 void exit_addr_controller(void);
 
-//메모리에 로드X
-/*
+/* //메모리에 로드 X
 typedef struct Node {
     Addr data;
     struct Node* next;
 } Node;
+
 Node* load_data_from_file(const char* filename);
 void save_to_file(Node* head, const char* filename);
 */

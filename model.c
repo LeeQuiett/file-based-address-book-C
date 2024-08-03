@@ -4,7 +4,7 @@
 #include <string.h>
 #include "header.h"
 
-//Node* head = NULL; 메모리에 로드X
+//Node* head = NULL;
 
 /*add_addr_controller*/
 void add_addr(const char* filename, Addr* addr) {
@@ -56,6 +56,45 @@ void search_by_name(const char* filename, int mode) {
 		name[strcspn(name, "\n")] = '\0';
 
 		FILE* fp = fopen(filename, "rb");
+		FILE* temp_fp = fopen(TEMP_FILENAME, "wb");
+		if (fp == NULL || temp_fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {		
+			if (strcmp(addr.name, name) == 0) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				printf("Start to delete...\n");
+				found = 1;
+				continue; // 삭제할 구조체는 건너뛰기
+			}
+			fwrite(&addr, sizeof(Addr), 1, temp_fp);
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+
+		fclose(fp);
+		fclose(temp_fp);
+
+		remove(filename);
+		rename(TEMP_FILENAME, filename);
+	}	
+}
+/*전화번호로 검색*/
+void search_by_tel(const char* filename, int mode) {
+	if (mode == 1) { //검색 모드
+		char tel[30];
+		print_message("Enter the tel to search: ");
+		fgets(tel, sizeof(tel), stdin);
+		tel[strcspn(tel, "\n")] = '\0';
+
+		FILE* fp = fopen(filename, "rb");
 		if (fp == NULL) {
 			perror("Failed to open file for reading");
 			return;
@@ -64,52 +103,49 @@ void search_by_name(const char* filename, int mode) {
 		Addr addr;
 		int found = 0;
 		while (fread(&addr, sizeof(Addr), 1, fp)) {
-			if (strcmp(addr.name, name) == 0) {
+			if (strcmp(addr.tel, tel) == 0) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				found = 1;
+			}
+		}
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+		fclose(fp);
+	}
+	else { //삭제 모드
+		char tel[30];
+		print_message("Enter the tel to Delete: ");
+		fgets(tel, sizeof(tel), stdin);
+		tel[strcspn(tel, "\n")] = '\0';
+
+		FILE* fp = fopen(filename, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
+			if (strcmp(addr.tel, tel) == 0) {
 				print_message("Contact found:\n");
 				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
 				printf("Start to Delete...\n");
 				strcpy(addr.name, "Deleted Name");
 				strcpy(addr.tel, "Deleted tel");
 				strcpy(addr.addr, "Deleted addr");
+				fwrite(&addr, sizeof(Addr), 1, fp);
 				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
 				found = 1;
 			}
 		}
-
 		if (!found) {
 			print_message("Contact not found.\n");
 		}
-
 		fclose(fp);
-	}	
-}
-/*전화번호로 검색*/
-void search_by_tel(const char* filename) {
-	char tel[30];
-	print_message("Enter the tel to search: ");
-	fgets(tel, sizeof(tel), stdin);
-	tel[strcspn(tel, "\n")] = '\0';
-
-	FILE* fp = fopen(filename, "rb");
-	if (fp == NULL) {
-		perror("Failed to open file for reading");
-		return;
 	}
-
-	Addr addr;
-	int found = 0;
-	while (fread(&addr, sizeof(Addr), 1, fp)) {
-		if (strcmp(addr.tel, tel) == 0) {
-			print_message("Contact found:\n");
-			printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
-			found = 1;			
-		}
-	}
-	if (!found) {
-		print_message("Contact not found.\n");
-	}
-	fclose(fp);
-
 }
 /*주소로 검색*/
 void search_by_addr(const char* filename) {
@@ -359,11 +395,7 @@ void print_addr(const char* filename) {
 	}
 
 }
-
-
-
-//메모리에 로드X
-/*
+/* //메인메모리에 로드 X
 Node* load_data_from_file(const char* filename) {
 	FILE* fp = fopen(filename, "rb");
 	if (fp == NULL) {
