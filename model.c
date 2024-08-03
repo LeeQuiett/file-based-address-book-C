@@ -21,7 +21,7 @@ void add_addr(const char* filename, Addr* addr) {
 /*search_addr_controller*/
 /*이름으로 검색*/
 void search_by_name(const char* filename, int mode) {
-	if (mode == 1) { //검색 모드
+	if (mode == 1) { // 검색 모드
 		char name[30];
 		print_message("Enter the name to search: ");
 		fgets(name, sizeof(name), stdin);
@@ -38,18 +38,18 @@ void search_by_name(const char* filename, int mode) {
 		while (fread(&addr, sizeof(Addr), 1, fp)) {
 			if (strcmp(addr.name, name) == 0) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				output_format(addr);
 				found = 1;
 			}
 		}
 
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
 
 		fclose(fp);
 	}
-	else { //삭제 모드
+	else { // 삭제 모드
 		char name[30];
 		print_message("Enter the name to Delete: ");
 		fgets(name, sizeof(name), stdin);
@@ -58,17 +58,19 @@ void search_by_name(const char* filename, int mode) {
 		FILE* fp = fopen(filename, "rb");
 		FILE* temp_fp = fopen(TEMP_FILENAME, "wb");
 		if (fp == NULL || temp_fp == NULL) {
-			perror("Failed to open file for reading");
+			perror("Failed to open file for reading/writing");
+			if (fp) fclose(fp);
+			if (temp_fp) fclose(temp_fp);
 			return;
 		}
 
 		Addr addr;
 		int found = 0;
-		while (fread(&addr, sizeof(Addr), 1, fp)) {		
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
 			if (strcmp(addr.name, name) == 0) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
-				printf("Start to delete...\n");
+				printf("Start to delete this\n");
+				output_format(addr);
 				found = 1;
 				continue; // 삭제할 구조체는 건너뛰기
 			}
@@ -76,19 +78,23 @@ void search_by_name(const char* filename, int mode) {
 		}
 
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
 
 		fclose(fp);
 		fclose(temp_fp);
 
-		remove(filename);
-		rename(TEMP_FILENAME, filename);
-	}	
+		if (remove(filename) != 0) {
+			perror("Failed to remove original file");
+		}
+		if (rename(TEMP_FILENAME, filename) != 0) {
+			perror("Failed to rename temp file");
+		}
+	}
 }
 /*전화번호로 검색*/
 void search_by_tel(const char* filename, int mode) {
-	if (mode == 1) { //검색 모드
+	if (mode == 1) { // 검색 모드
 		char tel[30];
 		print_message("Enter the tel to search: ");
 		fgets(tel, sizeof(tel), stdin);
@@ -105,24 +111,28 @@ void search_by_tel(const char* filename, int mode) {
 		while (fread(&addr, sizeof(Addr), 1, fp)) {
 			if (strcmp(addr.tel, tel) == 0) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				output_format(addr);
 				found = 1;
 			}
 		}
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
+
 		fclose(fp);
 	}
-	else { //삭제 모드
+	else { // 삭제 모드
 		char tel[30];
 		print_message("Enter the tel to Delete: ");
 		fgets(tel, sizeof(tel), stdin);
 		tel[strcspn(tel, "\n")] = '\0';
 
 		FILE* fp = fopen(filename, "rb");
-		if (fp == NULL) {
-			perror("Failed to open file for reading");
+		FILE* temp_fp = fopen(TEMP_FILENAME, "wb");
+		if (fp == NULL || temp_fp == NULL) {
+			perror("Failed to open file for reading/writing");
+			if (fp) fclose(fp);
+			if (temp_fp) fclose(temp_fp);
 			return;
 		}
 
@@ -131,51 +141,102 @@ void search_by_tel(const char* filename, int mode) {
 		while (fread(&addr, sizeof(Addr), 1, fp)) {
 			if (strcmp(addr.tel, tel) == 0) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
-				printf("Start to Delete...\n");
-				strcpy(addr.name, "Deleted Name");
-				strcpy(addr.tel, "Deleted tel");
-				strcpy(addr.addr, "Deleted addr");
-				fwrite(&addr, sizeof(Addr), 1, fp);
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				printf("Start to Delete this\n");
+				output_format(addr);
 				found = 1;
+				continue;
 			}
+			fwrite(&addr, sizeof(Addr), 1, temp_fp);
 		}
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
+
 		fclose(fp);
+		fclose(temp_fp);
+
+		if (remove(filename) != 0) {
+			perror("Failed to remove original file");
+		}
+		if (rename(TEMP_FILENAME, filename) != 0) {
+			perror("Failed to rename temp file");
+		}
 	}
 }
 /*주소로 검색*/
-void search_by_addr(const char* filename) {
-	char addr[100];
-	print_message("Enter the address to search: ");
-	fgets(addr, sizeof(addr), stdin);
-	addr[strcspn(addr, "\n")] = '\0';
+void search_by_addr(const char* filename, int mode) {
+	if (mode == 1) { // 검색 모드
+		char addr[100];
+		print_message("Enter the address to search: ");
+		fgets(addr, sizeof(addr), stdin);
+		addr[strcspn(addr, "\n")] = '\0';
 
-	FILE* fp = fopen(filename, "rb");
-	if (fp == NULL) {
-		perror("Failed to open file for reading");
-		return;
+		FILE* fp = fopen(filename, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr a;
+		int found = 0;
+		while (fread(&a, sizeof(Addr), 1, fp)) {
+			if (strcmp(a.addr, addr) == 0) {
+				print_message("Contact found:\n");
+				output_format(a);
+				found = 1;
+			}
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n\n");
+		}
+
+		fclose(fp);
 	}
+	else { // 삭제 모드
+		char addr[100];
+		print_message("Enter the address to Delete: ");
+		fgets(addr, sizeof(addr), stdin);
+		addr[strcspn(addr, "\n")] = '\0';
 
-	Addr a;
-	int found = 0;
-	while (fread(&a, sizeof(Addr), 1, fp)) {
-		if (strcmp(a.addr, addr) == 0) {
-			print_message("Contact found:\n");
-			printf("Name: %s\nTel: %s\nAddr: %s\n", a.name, a.tel, a.addr);
-			found = 1;
+		FILE* fp = fopen(filename, "rb");
+		FILE* temp_fp = fopen(TEMP_FILENAME, "wb");
+		if (fp == NULL || temp_fp == NULL) {
+			perror("Failed to open file for reading/writing");
+			if (fp) fclose(fp);
+			if (temp_fp) fclose(temp_fp);
+			return;
+		}
+
+		Addr a;
+		int found = 0;
+		while (fread(&a, sizeof(Addr), 1, fp)) {
+			if (strcmp(a.addr, addr) == 0) {
+				print_message("Contact found:\n");
+				printf("Start to Delete this\n");
+				output_format(a);
+				found = 1;
+				continue;
+			}
+			fwrite(&a, sizeof(Addr), 1, temp_fp);
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n\n");
+		}
+
+		fclose(fp);
+		fclose(temp_fp);
+
+		if (remove(filename) != 0) {
+			perror("Failed to remove original file");
+		}
+		if (rename(TEMP_FILENAME, filename) != 0) {
+			perror("Failed to rename temp file");
 		}
 	}
-
-	if (!found) {
-		print_message("Contact not found.\n");
-	}
-
-	fclose(fp);
 }
+
 /*문자열 내 서브 문자열의 수를 카운트*/
 int count_and_or(const char* str, const char* word) {
 	int count = 0;
@@ -245,13 +306,13 @@ void search_by_SQL(const char* filename) {
 
 			if (match) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				output_format(addr);
 				found = 1;
 			}
 		}
 
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
 
 		fclose(fp);
@@ -303,14 +364,14 @@ void search_by_SQL(const char* filename) {
 
 				if (match) {
 					print_message("Contact found:\n");
-					printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+					output_format(addr);
 					found = 1;
 				}				
 			}
 		}
 
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
 
 		fclose(fp);
@@ -349,7 +410,7 @@ void search_by_SQL(const char* filename) {
 			}
 			if (match) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				output_format(addr);
 				found = 1;
 			}
 			match = 0;
@@ -364,13 +425,13 @@ void search_by_SQL(const char* filename) {
 			}
 			if (match) {
 				print_message("Contact found:\n");
-				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				output_format(addr);
 				found = 1;
 			}
 		}
 
 		if (!found) {
-			print_message("Contact not found.\n");
+			print_message("Contact not found.\n\n");
 		}
 
 		fclose(fp);
@@ -391,9 +452,9 @@ void print_addr(const char* filename) {
 		return;
 	}
 	while (fread(&addr, sizeof(Addr), 1, fp)) {
-		printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+		output_format(addr);
 	}
-
+	fclose(fp);
 }
 /* //메인메모리에 로드 X
 Node* load_data_from_file(const char* filename) {

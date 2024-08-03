@@ -19,7 +19,7 @@ int main() {
 	};
 
 	while (1) {
-		printf("[1] ADD, [2] DELETE, [3] SEARCH, [4] PRINT, [5] EXIT: ");
+		printf("[1] ADD [2] DELETE [3] SEARCH [4] PRINT [5] EXIT: ");
 		scanf("%d%*c", &my_select);
 
 		if (my_select >= ADD && my_select <= EXIT) {

@@ -1,6 +1,7 @@
 #pragma once
 #define FILENAME "addr_book.dat"
 #define TEMP_FILENAME "temp.dat"
+
 //데이터 구조체 정의
 typedef struct {
     char name[30];
