@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <Windows.h>
 #include "header.h"
 
-//Node* head = NULL;
+//Node* head = NULL; //메인 메모리에 로드X
 
 /*add_addr_controller*/
 void add_addr(const char* filename, Addr* addr) {
@@ -456,7 +457,49 @@ void print_addr(const char* filename) {
 	}
 	fclose(fp);
 }
-/* //메인메모리에 로드 X
+
+/*개발자 모드! 첫 번째와 마지막 구조체를 출력하는 함수 첫 화면에서 6을 입력하세요!*/
+void print_first_and_last(const char* filename) {
+	FILE* fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		perror("Failed to open file for reading");
+		return;
+	}
+
+	// 파일 크기 계산
+	fseek(fp, 0, SEEK_END);
+	long file_size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+
+	size_t struct_size = sizeof(Addr);
+
+	// 구조체 수 계산
+	int num_records = file_size / struct_size; 
+
+	// 첫 번째 구조체 읽기
+	Addr first_addr;
+	if (fread(&first_addr, struct_size, 1, fp) == 1) {
+		printf("First Record:\n");
+		output_format(first_addr);
+	}
+	else {
+		perror("Failed to read the first record");
+	}
+
+	// 마지막 구조체 읽기
+	fseek(fp, -(int)struct_size, SEEK_END);
+	Addr last_addr;
+	if (fread(&last_addr, struct_size, 1, fp) == 1) {
+		printf("Last Record:\n");
+		output_format(last_addr);
+	}
+	else {
+		perror("Failed to read the last record");
+	}
+	fclose(fp);
+}
+
+/* // 메인메모리에 로드 X
 Node* load_data_from_file(const char* filename) {
 	FILE* fp = fopen(filename, "rb");
 	if (fp == NULL) {

@@ -61,7 +61,7 @@ void search_addr_controller() {
         case 1: search_by_name(FILENAME, 1); return;
         case 2: search_by_tel(FILENAME, 1); return;
         case 3: search_by_addr(FILENAME, 1); return;
-        case 4: search_by_SQL(FILENAME, 1); return;
+        case 4: search_by_SQL(FILENAME); return;
         case 5: system("cls"); return;
         default: system("cls"); puts("Wrong input! Try again!"); break;
         }
