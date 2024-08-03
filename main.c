@@ -26,6 +26,11 @@ int main() {
 			print_first_and_last(FILENAME);
 			continue;
 		}
+		else if (my_select == 7) {
+			measure_execution_time(1, "First");
+			measure_execution_time(2, "Last");
+			continue;
+		}
 
 		if (my_select >= ADD && my_select <= EXIT) {
 			if (my_select == EXIT) {

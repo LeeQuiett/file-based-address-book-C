@@ -1,5 +1,5 @@
 #pragma once
-#define FILENAME "addr_book.dat"
+#define FILENAME "addr_book_10M.dat"
 #define TEMP_FILENAME "temp.dat"
 
 /*데이터 구조체 정의*/
@@ -21,6 +21,8 @@ void print_addr(const char* filename);
 
 /*개발자 모드! 첫 번째와 마지막 구조체를 출력하는 함수 첫 화면에서 6을 입력하세요!*/
 void print_first_and_last(const char* filename);
+/*개발자 모드! 코드 실행 시간 측정! 첫 화면에서 7을 입력하세요!*/
+void measure_execution_time(int first_or_last, char* str);
 
 /*뷰 관련 함수 선언*/
 void print_message(char* message);

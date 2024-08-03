@@ -320,7 +320,7 @@ void search_by_SQL(const char* filename) {
 	}
 	/*쿼리에 and가 1개 있는 경우*/
 	else if (and_count == 1 && or_count == 0) {
-		
+
 		parse_query(query, query1, query2, " and ");
 		printf("Query1: %s\n", query1);
 		printf("Query2: %s\n\n", query2);
@@ -367,7 +367,7 @@ void search_by_SQL(const char* filename) {
 					print_message("Contact found:\n");
 					output_format(addr);
 					found = 1;
-				}				
+				}
 			}
 		}
 
@@ -474,7 +474,7 @@ void print_first_and_last(const char* filename) {
 	size_t struct_size = sizeof(Addr);
 
 	// 구조체 수 계산
-	int num_records = file_size / struct_size; 
+	int num_records = file_size / struct_size;
 
 	// 첫 번째 구조체 읽기
 	Addr first_addr;
@@ -497,6 +497,57 @@ void print_first_and_last(const char* filename) {
 		perror("Failed to read the last record");
 	}
 	fclose(fp);
+}
+
+/*개발자 모드! 첫 번째 혹은 마지막 데이터의 검색 시간 측정! 첫 화면에서 7을 입력하세요!*/
+void measure_execution_time(int first_or_last, char* str) {
+	printf("===========================\n%s Addr!\nStart measuring execution time\n\n", str);
+	char name[30];
+	if (first_or_last == 1) {
+		strcpy(name, "010-1448-1926");
+	}
+	else {
+		strcpy(name, "010-5924-2000");
+	}
+
+	FILE* fp = fopen(FILENAME, "rb");
+	if (fp == NULL) {
+		perror("Failed to open file for reading");
+		return;
+	}
+		
+	LARGE_INTEGER frequency, start, end;
+
+	// 카운터의 주파수를 가져옵니다!
+	QueryPerformanceFrequency(&frequency);
+
+	// 시작 시간 기록
+	QueryPerformanceCounter(&start);
+
+	// 측정할 함수 호출
+	Addr addr;
+	int found = 0;
+	while (fread(&addr, sizeof(Addr), 1, fp)) {
+		if (strcmp(addr.tel, name) == 0) {
+			print_message("Contact found:\n");
+			output_format(addr);
+			found = 1;
+		}
+	}
+
+	if (!found) {
+		print_message("Contact not found.\n\n");
+	}
+
+	fclose(fp);
+
+	// 종료 시간 기록
+	QueryPerformanceCounter(&end);
+
+	// 실행 시간 계산
+	double elapsed_time = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart;
+
+	printf("Execution time: %f seconds\n===========================\n", elapsed_time);
 }
 
 /* // 메인메모리에 로드 X
@@ -522,7 +573,7 @@ Node* load_data_from_file(const char* filename) {
 		if (head == NULL) {
 			head = newNode;
 			tail = head;
-		} 
+		}
 		else {
 			tail->next = newNode;
 			tail = newNode;
