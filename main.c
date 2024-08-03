@@ -36,4 +36,5 @@ int main() {
 			puts("Wrong input! Try again!");
 		}
 	}
+	return 0;
 }

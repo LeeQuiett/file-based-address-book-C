@@ -25,7 +25,18 @@ void add_addr_controller() {
 
 
 void delete_addr_controller() {
-
+    while (1) {
+        print_message("[1] Search for Del by name, [2] Search for Del by tel, [3] Search for Del by addr, [4] Search for Del by SQL: ");
+        int input;
+        scanf("%d%*c", &input);
+        switch (input) {
+        case 1: search_by_name(FILENAME, 2); return;
+        case 2: search_by_tel(FILENAME, 2); return;
+        case 3: search_by_addr(FILENAME, 2); return;
+        case 4: search_by_SQL(FILENAME, 2); return;
+        default: puts("Wrong input! Try again!"); break;
+        }
+    }
 }
 
 void search_addr_controller() {
@@ -34,10 +45,10 @@ void search_addr_controller() {
         int input;
         scanf("%d%*c", &input);
         switch (input) {
-        case 1: search_by_name(); return;
-        case 2: search_by_tel(); return;
-        case 3: search_by_addr(); return;
-        case 4: search_by_SQL(); return;
+        case 1: search_by_name(FILENAME, 1); return;
+        case 2: search_by_tel(FILENAME, 1); return;
+        case 3: search_by_addr(FILENAME, 1); return;
+        case 4: search_by_SQL(FILENAME, 1); return;
         default: puts("Wrong input! Try again!"); break;
         }
     }
@@ -45,8 +56,10 @@ void search_addr_controller() {
 
 void print_addr_controller() {
     print_message("Print the entire address book\n\n");
+    print_addr(FILENAME);
 }
 
 void exit_addr_controller() {
-
+    print_message("Exit the program...Bye!\n");
+    return;
 }

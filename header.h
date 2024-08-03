@@ -1,7 +1,7 @@
 #pragma once
 #define FILENAME "addr_book.dat"
 
-// 데이터 구조체 정의
+//데이터 구조체 정의
 typedef struct {
     char name[30];
     char tel[15];
@@ -9,8 +9,14 @@ typedef struct {
 } Addr;
 
 
-// 모델 관련 함수 선언
+//모델 관련 함수 선언
 void add_addr(const char* filename, Addr* addr);
+//mode == 1 검색, mode == 2 삭제
+void search_by_name(const char* filename, int mode); 
+void search_by_tel(const char* filename, int mode);
+void search_by_addr(const char* filename, int mode);
+void search_by_SQL(const char* filename, int mode);
+void print_addr(const char* filename);
 
 // 뷰 관련 함수 선언
 void print_message(char* message);

@@ -20,42 +20,77 @@ void add_addr(const char* filename, Addr* addr) {
 
 /*search_addr_controller*/
 /*이름으로 검색*/
-void search_by_name(void) {
-	char name[30];
-	print_message("Enter the name to search: ");
-	fgets(name, sizeof(name), stdin);
-	name[strcspn(name, "\n")] = '\0';
+void search_by_name(const char* filename, int mode) {
+	if (mode == 1) { //검색 모드
+		char name[30];
+		print_message("Enter the name to search: ");
+		fgets(name, sizeof(name), stdin);
+		name[strcspn(name, "\n")] = '\0';
 
-	FILE* fp = fopen(FILENAME, "rb");
-	if (fp == NULL) {
-		perror("Failed to open file for reading");
-		return;
-	}
-
-	Addr addr;
-	int found = 0;
-	while (fread(&addr, sizeof(Addr), 1, fp)) {
-		if (strcmp(addr.name, name) == 0) {
-			print_message("Contact found:\n");
-			printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
-			found = 1;			
+		FILE* fp = fopen(filename, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
 		}
-	}
 
-	if (!found) {
-		print_message("Contact not found.\n");
-	}
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
+			if (strcmp(addr.name, name) == 0) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				found = 1;
+			}
+		}
 
-	fclose(fp);
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+
+		fclose(fp);
+	}
+	else { //삭제 모드
+		char name[30];
+		print_message("Enter the name to Delete: ");
+		fgets(name, sizeof(name), stdin);
+		name[strcspn(name, "\n")] = '\0';
+
+		FILE* fp = fopen(filename, "rb");
+		if (fp == NULL) {
+			perror("Failed to open file for reading");
+			return;
+		}
+
+		Addr addr;
+		int found = 0;
+		while (fread(&addr, sizeof(Addr), 1, fp)) {
+			if (strcmp(addr.name, name) == 0) {
+				print_message("Contact found:\n");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				printf("Start to Delete...\n");
+				strcpy(addr.name, "Deleted Name");
+				strcpy(addr.tel, "Deleted tel");
+				strcpy(addr.addr, "Deleted addr");
+				printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+				found = 1;
+			}
+		}
+
+		if (!found) {
+			print_message("Contact not found.\n");
+		}
+
+		fclose(fp);
+	}	
 }
 /*전화번호로 검색*/
-void search_by_tel(void) {
+void search_by_tel(const char* filename) {
 	char tel[30];
 	print_message("Enter the tel to search: ");
 	fgets(tel, sizeof(tel), stdin);
 	tel[strcspn(tel, "\n")] = '\0';
 
-	FILE* fp = fopen(FILENAME, "rb");
+	FILE* fp = fopen(filename, "rb");
 	if (fp == NULL) {
 		perror("Failed to open file for reading");
 		return;
@@ -75,14 +110,15 @@ void search_by_tel(void) {
 	}
 	fclose(fp);
 
-}/*주소로 검색*/
-void search_by_addr(void) {
+}
+/*주소로 검색*/
+void search_by_addr(const char* filename) {
 	char addr[100];
 	print_message("Enter the address to search: ");
 	fgets(addr, sizeof(addr), stdin);
 	addr[strcspn(addr, "\n")] = '\0';
 
-	FILE* fp = fopen(FILENAME, "rb");
+	FILE* fp = fopen(filename, "rb");
 	if (fp == NULL) {
 		perror("Failed to open file for reading");
 		return;
@@ -136,7 +172,7 @@ void parse_query(const char* query, char* query1, char* query2, char* and_or) {
 	}
 }
 /*SQL 스타일 검색*/
-void search_by_SQL(void) {
+void search_by_SQL(const char* filename) {
 	char query[256];
 	char query1[256], query2[256];
 	printf("쿼리 예: name=홍길동 and addr=서울시, tel=02-123-123 or addr=대전시\n\n");
@@ -151,7 +187,7 @@ void search_by_SQL(void) {
 		char field[50], value[200];
 		sscanf(query, "%[^=]=%s", field, value);
 
-		FILE* fp = fopen(FILENAME, "rb");
+		FILE* fp = fopen(filename, "rb");
 		if (fp == NULL) {
 			perror("Failed to open file for reading");
 			return;
@@ -197,7 +233,7 @@ void search_by_SQL(void) {
 		sscanf(query1, "%[^=]=%s", field, value);
 		sscanf(query2, "%[^=]=%s", field2, value2);
 
-		FILE* fp = fopen(FILENAME, "rb");
+		FILE* fp = fopen(filename, "rb");
 		if (fp == NULL) {
 			perror("Failed to open file for reading");
 			return;
@@ -256,7 +292,7 @@ void search_by_SQL(void) {
 		sscanf(query1, "%[^=]=%s", field, value);
 		sscanf(query2, "%[^=]=%s", field2, value2);
 
-		FILE* fp = fopen(FILENAME, "rb");
+		FILE* fp = fopen(filename, "rb");
 		if (fp == NULL) {
 			perror("Failed to open file for reading");
 			return;
@@ -310,9 +346,18 @@ void search_by_SQL(void) {
 }
 
 /*print_addr_controller*/
-void print_addr() {
-	FILE* fp = fopen(FILENAME, "rb");
-	if (fp == NULL) {}
+void print_addr(const char* filename) {
+	Addr addr;
+
+	FILE* fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		perror("Failed to open file for reading");
+		return;
+	}
+	while (fread(&addr, sizeof(Addr), 1, fp)) {
+		printf("Name: %s\nTel: %s\nAddr: %s\n\n", addr.name, addr.tel, addr.addr);
+	}
+
 }
 
 
