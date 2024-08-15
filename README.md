@@ -702,4 +702,6 @@ void measure_execution_time(int first_or_last, char* str) {
 - ADT 적용 (자료구조와 관리 대상자료 분리)
 - 인덱스 사용
 - 데이터 캐싱
-- Commit과 그에 대응하는 롤백 구현 및 다중 사용자 지원
+- Commit과 그에 대응하는 롤백 구현 및 멀티스레딩 환경 지원
+- Client/Server 구조 적용
+    - System, Socket 프로그래밍 학습 필요
