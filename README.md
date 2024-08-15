@@ -696,4 +696,10 @@ void measure_execution_time(int first_or_last, char* str) {
 > 
 > 
 > Kim, Bo-Kyung, Min-Hee Yoo, and Dong-Ho Lee. 2011. "An Efficient Implementation of B-Tree Using Lazy Update on Flash Memory." *Proceedings of the Korean Institute of Information Scientists and Engineers* 38, no. 1 (2011): 69-72.
-> 
+---
+# 추가 개선 방향
+
+- ADT 적용 (자료구조와 관리 대상자료 분리)
+- 인덱스 사용
+- 데이터 캐싱
+- Commit과 그에 대응하는 롤백 구현 및 다중 사용자 지원
