@@ -1,4 +1,5 @@
 # file-based-address-book
+
 # 요구사항 분석 및 정의
 
 - 이름, 주소 전화번호를 관리 할 수 있는 주소록 프로그램 작성
@@ -7,6 +8,7 @@
 - 1 만개 이상의 더미 데이터를 넣어서 운영
     - 이름 중복 허용
     - 첫 번째 데이터와 1만 번째 데이터 간 검색속도 차이 확인
+    - [더미 데이터는 이렇게 생성하였습니다.](https://github.com/LeeQuiett/address-book-dummy-data-generator)
 - 성능 극대화 방안 제시
 
 ---
