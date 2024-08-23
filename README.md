@@ -707,3 +707,16 @@ void measure_execution_time(int first_or_last, char* str) {
 - Commit과 그에 대응하는 롤백 구현 및 멀티스레딩 환경 지원
 - Client/Server 구조 적용
     - System, Socket 프로그래밍 학습 필요
+ 
+---
+### 🌟 기여 방법
+
+오류를 발견하거나 개선 사항이 있을 경우, 이슈를 열거나 풀 리퀘스트를 제출해 주세요. 모든 기여는 환영합니다!
+
+### 📧 연락처
+
+질문이나 문의 사항이 있으시면 vkdnjpo1512@naver.com으로 연락 주세요.
+
+### 🗝️LICENSE
+
+이 프로젝트는 MIT 라이선스에 따라 배포됩니다
