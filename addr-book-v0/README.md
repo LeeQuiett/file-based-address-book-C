@@ -1,4 +1,5 @@
 # file-based-address-book
+
 # 요구사항 분석 및 정의
 
 - 이름, 주소 전화번호를 관리 할 수 있는 주소록 프로그램 작성
@@ -7,6 +8,7 @@
 - 1 만개 이상의 더미 데이터를 넣어서 운영
     - 이름 중복 허용
     - 첫 번째 데이터와 1만 번째 데이터 간 검색속도 차이 확인
+    - [더미 데이터는 이렇게 생성하였습니다.](https://github.com/LeeQuiett/address-book-dummy-data-generator)
 - 성능 극대화 방안 제시
 
 ---
@@ -705,3 +707,16 @@ void measure_execution_time(int first_or_last, char* str) {
 - Commit과 그에 대응하는 롤백 구현 및 멀티스레딩 환경 지원
 - Client/Server 구조 적용
     - System, Socket 프로그래밍 학습 필요
+ 
+---
+### 🌟 기여 방법
+
+오류를 발견하거나 개선 사항이 있을 경우, 이슈를 열거나 풀 리퀘스트를 제출해 주세요. 모든 기여는 환영합니다!
+
+### 📧 연락처
+
+질문이나 문의 사항이 있으시면 vkdnjpo1512@naver.com으로 연락 주세요.
+
+### 🗝️LICENSE
+
+이 프로젝트는 MIT 라이선스에 따라 배포됩니다
