@@ -31,6 +31,7 @@ void eventLoopRun(void)
 			addDataUi();
 			break;
 		case SEARCH:
+			searchDataUi();
 			break;
 		case PRINT:
 			printDataUi();
@@ -48,6 +49,45 @@ void eventLoopRun(void)
 	}
 	puts("프로그램을 종료합니다.");
 }
+
+void searchDataUi(void)
+{
+	puts("전화번호로 검색 시 O(n)의 시간복잡도로 검색이 가능합니다!");
+	printf("[1] 이름으로 검색 [2] 전화번호로 검색 [3] 주소로 검색 [4] SQL로 검색 [5] 돌아가기: ");
+	int input;
+	if (scanf_s("%d%*c", &input) != 1)
+	{
+		puts("잘못된 입력입니다.");
+		_getch();
+		return;
+	}
+
+	if (input == 1)
+	{
+		// 캐시에서 검색 시도
+		if (searchByNameFromCache() == 1)
+		{
+			return;
+		}
+		else
+		{
+			// 캐시에서 검색 실패 시 파일에서 검색 여부 묻기
+			printf("캐시에서 찾지 못했습니다. 파일에서 검색하시겠습니까? [1] 예 [2] 아니오: ");
+			int fileSearchInput;
+			if (scanf_s("%d%*c", &fileSearchInput) != 1 || fileSearchInput != 1)
+			{
+				puts("파일에서 검색을 취소했습니다.");
+				_getch();
+				return;
+			}
+
+			// 파일에서 검색
+			searchByName();
+		}
+		return;
+	}
+}
+
 
 void commitDataUi(void)
 {

@@ -38,3 +38,7 @@ void printData(const char* filename);
 void printCache(void);
 void commitData(void);
 void commitCancle(void);
+void searchByName(void);
+void searchByPhone(void);
+void searchByAddr(void);
+void searchBySQL(void);

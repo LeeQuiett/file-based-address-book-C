@@ -10,3 +10,4 @@ void eventLoopRun(void);
 void addDataUi(void);
 void printDataUi(void);
 void commitDataUi(void);
+void searchDataUi(void);

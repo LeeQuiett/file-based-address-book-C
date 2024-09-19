@@ -234,3 +234,76 @@ void commitCancle(void)
 	puts("커밋 취소가 완료되었습니다.");
 	_getch();
 }
+
+// 이름으로 검색하는 함수
+void searchByName(void)
+{
+	char name[12];
+	printf("검색할 이름을 입력하세요: ");
+	fgets(name, sizeof(name), stdin);
+	name[strcspn(name, "\n")] = '\0';
+
+	FILE* fp = fopen(FILENAME, "rb");
+	if (fp == NULL)
+	{
+		puts("파일 개방 실패!");
+		return;
+	}
+
+	USERDATA userData;
+	int foundFlag = 0;
+	int offset = 0;
+	while (fread(&userData, sizeof(USERDATA), 1, fp))
+	{
+		if (strcmp(userData.name, name) == 0)
+		{
+			printf("전화번호: %-15d || 이름: %-4s || 주소: %-30s || ", userData.phone, userData.name, userData.address);
+			puts("파일에서 읽은 데이터입니다.");
+
+			// 일치하는 데이터는 캐시에 추가
+			AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
+			foundFlag = 1;
+		}
+		offset++;
+	}
+	fclose(fp);
+
+	if (!foundFlag)
+	{
+		puts("일치하는 이름이 없습니다.");
+	}
+	_getch();
+}
+
+int searchByNameFromCache()
+{
+	char name[12];
+	printf("캐시에서 검색할 이름을 입력하세요: ");
+	fgets(name, sizeof(name), stdin);
+	name[strcspn(name, "\n")] = '\0';
+
+	NODE* current = g_HeadNode.Next;
+	int foundFlag = 0;
+
+	while (current != &g_TailNode)
+	{
+		if (current->dataCache != NULL)
+		{
+			USERDATA* userData = (USERDATA*)current->dataCache;
+
+			if (strcmp(userData->name, name) == 0)
+			{
+				printf("전화번호: %-15d || 이름: %-4s || 주소: %-30s || ", userData->phone, userData->name, userData->address);
+				foundFlag = 1;
+			}
+		}
+		current = current->Next;
+	}
+
+	if (!foundFlag)
+	{
+		puts("일치하는 이름이 캐시에 없습니다.");
+	}
+	_getch();
+	return foundFlag;
+}
