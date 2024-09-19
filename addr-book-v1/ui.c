@@ -115,6 +115,11 @@ void searchDataUi(void)
 			searchByAddr();
 		}
 	}
+	else if (input == 4)
+	{
+		searchBySQL();
+		_getch();
+	}
 }
 
 

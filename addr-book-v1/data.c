@@ -480,3 +480,73 @@ int searchByAddrFromCache()
 	_getch();
 	return foundFlag;
 }
+
+// SQL문으로 검색하는 함수
+void searchBySQL(void)
+{
+	char query[200];
+	char query1[100], query2[100];
+	printf("쿼리 예: name=홍길동 and addr=서울시, phone=1230-1230 or addr=대전시\n\n");
+	printf("쿼리를 입력하세요: ");
+	fgets(query, sizeof(query), stdin);
+	query[strcspn(query, "\n")] = '\0';
+
+	// 문자열 내 서브 문자열의 수를 카운트
+	int and_count = count_and_or(query, " and ");
+	int or_count = count_and_or(query, " or ");
+
+	// 쿼리에 and나 or가 없을 경우
+	if (and_count == 0 && or_count == 0)
+	{
+		char field[50], value[200];
+		// = 을 기준으로 문자열을 분리
+		sscanf(query, "%[^=]=%s", field, value);
+
+		FILE* fp = fopen(FILENAME, "rb");
+		if (fp == NULL)
+		{
+			puts("파일 개방 실패!");
+			_getch();
+			return;
+		}
+
+		USERDATA userData;
+		int foundFlag = 0;
+
+		while (fread(&userData, sizeof(USERDATA), 1, fp))
+		{
+			if (strcmp(field, "name") == 0 && strcmp(userData.name, value) == 0)
+				foundFlag = 1;
+			else if (strcmp(field, "phone") == 0 && userData.phone == atoi(value))
+				foundFlag = 1;
+			else if (strcmp(field, "addr") == 0 && strcmp(userData.address, value) == 0)
+				foundFlag = 1;
+
+			if (foundFlag) {
+				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");
+			}
+		}
+
+		if (foundFlag == 0)
+		{
+			puts("일치하는 항목을 찾지 못했습니다.");
+		}
+		fclose(fp);
+		_getch();
+	}
+}
+
+// 문자열 내 서브 문자열의 수를 카운트
+int count_and_or(const char* str, const char* word)
+{
+	int count = 0;
+	const char* pos = str;
+
+	while ((pos = strstr(pos, word)) != NULL)
+	{
+		count++;
+		pos += strlen(word);
+	}
+	return count;
+}
