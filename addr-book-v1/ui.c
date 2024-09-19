@@ -102,6 +102,17 @@ void searchDataUi(void)
 		else
 		{
 			// 캐시에서 검색 실패 시 파일에서 검색 여부 묻기
+			printf("캐시에서 찾지 못했습니다. 파일에서 검색하시겠습니까? [1] 예 [2] 아니오: ");
+			int fileSearchInput;
+			if (scanf_s("%d%*c", &fileSearchInput) != 1 || fileSearchInput != 1)
+			{
+				puts("파일에서 검색을 취소했습니다.");
+				_getch();
+				return;
+			}
+
+			// 파일에서 검색
+			searchByAddr();
 		}
 	}
 }

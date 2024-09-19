@@ -162,11 +162,17 @@ void printCache()
 			printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData->phone, userData->name, userData->address);
 			if (current->offset != -1)
 			{
-				printf("Commit: %-10s || key: %-10d || offset: %-10d\n\n", "Yes", current->key, current->offset);
+				if (current->bNew == true)
+					printf("Commit: % -10s || key: % -10d || offset: % -10d || 생성된 데이터!\n\n", "Yes", current->key, current->offset);
+				else
+					printf("Commit: % -10s || key: % -10d || offset: % -10d || 검색된 데이터!\n\n", "Yes", current->key, current->offset);
 			}
 			else
 			{
-				printf("Commit: %-10s || key: %-10d || offset: %-10d\n\n", "Not yet", current->key, current->offset);
+				if (current->bNew == true)
+					printf("Commit: % -10s || key: %- 10d || offset: % -10d || 생성된 데이터!!\n\n", "Not yet", current->key, current->offset);
+				else
+					printf("Commit: % -10s || key: %- 10d || offset: % -10d || 검색된 데이터!!\n\n", "Not yet", current->key, current->offset);
 			}
 		}
 		current = current->Next;
@@ -191,7 +197,7 @@ void commitData(void)
 		{
 			USERDATA* userData = (USERDATA*)current->dataCache;
 
-			puts("Commit! 파일에 저장합니다.");
+			puts("Commit! 파일에 저장을 시작합니다.");
 			
 			fwrite(userData, sizeof(USERDATA), 1, fp);
 			
@@ -202,7 +208,7 @@ void commitData(void)
 		current = current->Next;
 	}
 	fclose(fp);
-	puts("커밋이 완료되었습니다.");
+	puts("Commit! 완료되었습니다.");
 	_getch();
 }
 
@@ -351,7 +357,7 @@ void searchByName(void)
 		if (strcmp(userData.name, name) == 0)
 		{
 			printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-			puts("파일에서 읽은 데이터입니다.");
+			puts("파일에서 읽은 데이터입니다.\n");
 
 			// 일치하는 데이터는 캐시에 추가
 			AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
@@ -368,6 +374,46 @@ void searchByName(void)
 	_getch();
 }
 
+void searchByAddr(void)
+{
+	char addr[100];
+	printf("검색할 이름을 입력하세요: ");
+	fgets(addr, sizeof(addr), stdin);
+	addr[strcspn(addr, "\n")] = '\0';
+
+	FILE* fp = fopen(FILENAME, "rb");
+	if (fp == NULL)
+	{
+		puts("파일 개방 실패!");
+		return;
+	}
+
+	USERDATA userData;
+	int foundFlag = 0;
+	int offset = 0;
+	while (fread(&userData, sizeof(USERDATA), 1, fp))
+	{
+		if (strcmp(userData.address, addr) == 0)
+		{
+			printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+			puts("파일에서 읽은 데이터입니다.\n");
+
+			// 일치하는 데이터는 캐시에 추가
+			AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
+			foundFlag = 1;
+		}
+		offset++;
+	}
+	fclose(fp);
+
+	if (!foundFlag)
+	{
+		puts("일치하는 이름이 없습니다.");
+	}
+	_getch();
+}
+
+// 이름으로 캐시에서 검색하는 함수
 int searchByNameFromCache()
 {
 	char name[12];
@@ -386,7 +432,7 @@ int searchByNameFromCache()
 
 			if (strcmp(userData->name, name) == 0)
 			{
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData->phone, userData->name, userData->address);
+				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);
 				foundFlag = 1;
 			}
 		}
@@ -401,7 +447,36 @@ int searchByNameFromCache()
 	return foundFlag;
 }
 
+// 주소로 캐시에서 검색하는 함수
 int searchByAddrFromCache()
 {
+	char addr[100];
+	printf("캐시에서 검색할 주소를 입력하세요: ");
+	fgets(addr, sizeof(addr), stdin);
+	addr[strcspn(addr, "\n")] = '\0';
 
+	NODE* current = g_HeadNode.Next;
+	int foundFlag = 0;
+
+	while (current != &g_TailNode)
+	{
+		if (current->dataCache != NULL)
+		{
+			USERDATA* userData = (USERDATA*)current->dataCache;
+
+			if (strcmp(userData->address, addr) == 0)
+			{
+				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);
+				foundFlag = 1;
+			}
+		}
+		current = current->Next;
+	}
+
+	if (!foundFlag)
+	{
+		puts("일치하는 주소가 캐시에 없습니다.");
+	}
+	_getch();
+	return foundFlag;
 }
