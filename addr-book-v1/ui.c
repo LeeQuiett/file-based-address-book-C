@@ -86,6 +86,24 @@ void searchDataUi(void)
 		}
 		return;
 	}
+	else if (input == 2)
+	{
+		puts("O(n)의 시간복잡도를 갖는 전화번호 검색을 선택하셨군요^~^");
+		searchByPhone();
+	}
+
+	else if (input == 3)
+	{
+		// 캐시에서 검색 시도
+		if (searchByAddrFromCache() == 1)
+		{
+			return;
+		}
+		else
+		{
+			// 캐시에서 검색 실패 시 파일에서 검색 여부 묻기
+		}
+	}
 }
 
 

@@ -42,3 +42,5 @@ void searchByName(void);
 void searchByPhone(void);
 void searchByAddr(void);
 void searchBySQL(void);
+int searchByNameFromCache();
+int searchByAddrFromCache()
