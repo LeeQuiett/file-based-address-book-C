@@ -1,0 +1,193 @@
+#pragma once
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+#include "ui.h"
+#include "data.h"
+#include "main.h"
+
+MENU printMenu(void)
+{
+	MENU input = 0;
+
+	system("cls");
+	printf("[1] 추가\t[2] 검색\t[3] 출력\t[4] 제거\t[5] 커밋\t[0] 나가기\n");
+	scanf_s("%d%*c", &input);
+	//while (getchar() != '\n');
+
+	return input;
+}
+
+void eventLoopRun(void)
+{
+	MENU menu = 0;
+	
+	while ((menu = printMenu()) != 0)
+	{
+		switch (menu)
+		{
+		case NEW:
+			addDataUi();
+			break;
+		case SEARCH:
+			break;
+		case PRINT:
+			printDataUi();
+			break;
+		case REMOVE:
+			break;
+		case COMMIT:
+			commitDataUi();
+			break;
+		default:
+			puts("잘못된 입력입니다. 다시 입력해 주세요.");
+			_getch();
+			break;
+		}
+	}
+	puts("프로그램을 종료합니다.");
+}
+
+void commitDataUi(void)
+{
+	printf("[1] 커밋하기 [2] 커밋하지 않은 내용 취소하기 [3] 돌아가기: ");
+	int input;
+	if (scanf_s("%d%*c", &input) != 1)
+	{
+		puts("잘못된 입력입니다.");
+		_getch();
+		return;
+	}
+
+	if (input == 1)
+	{
+		commitData();
+	}
+	else if (input == 2)
+	{
+		commitCancle();
+	}
+	else if (input == 3)
+	{
+		return;
+	}
+	else
+	{
+		puts("잘못된 입력입니다.");
+		_getch();
+		return;
+	}
+}
+
+void addDataUi()
+{
+	printf("[1] 추가하기 [2] 돌아가기: ");
+	int input;
+	scanf_s("%d%*c", &input);
+	//while (getchar() != '\n');
+	
+	if (input == 1)
+	{
+		USERDATA userData;
+
+		// 이름 입력
+		printf("이름을 입력하세요: ");
+		fgets(userData.name, sizeof(userData.name), stdin);
+		userData.name[strcspn(userData.name, "\n")] = '\0';
+
+		// 전화번호 입력
+		while (1)
+		{
+			printf("\"010\"과 \"-\"를 제외하고 전화번호를 입력하세요: ");
+
+			if (scanf_s("%d%*c", &userData.phone) != 1)
+			{
+				// 예외 처리
+				//while (getchar() != '\n');
+				puts("잘못된 입력입니다. 다시 입력해주세요.");
+				_getch();
+				continue;
+			}
+
+			if (userData.phone < 0 || userData.phone > 99999999)
+			{				
+				puts("전화번호 범위를 초과했습니다. 다시 입력해주세요.");
+				_getch();
+				continue;
+			}
+
+			if (phoneIndex[userData.phone] != -1)
+			{
+				puts("중복된 전화번호가 있습니다. 다시 입력해 주세요.");
+				continue;
+			}
+
+			break;
+		}
+
+		// 주소 입력
+		printf("주소를 입력하세요: ");
+		fgets(userData.address, sizeof(userData.address), stdin);
+		userData.address[strcspn(userData.address, "\n")] = '\0';
+
+		// 아래에 파일에 쓰기 작성
+		addData(FILENAME, &userData);
+		//puts("성공적으로 저장되었습니다.");
+		_getch();
+	}
+	else if (input == 2)
+	{
+		system("cls"); return;
+	}
+	else
+	{
+		//system("cls"); 
+		puts("잘못된 입력입니다.");
+		_getch(); return;
+	}
+		
+}
+
+void printDataUi()
+{
+	int input;
+	printf("[1] 전체 리스트 출력 [2] Cache된 리스트 출력 [3] 돌아가기: ");
+	scanf_s("%d%*c", &input);
+
+	switch (input)
+	{
+	case 1:
+		puts("전체 리스트를 출력합니다.");
+
+		_getch();
+
+		printData(FILENAME);
+
+		puts("출력이 완료되었습니다.");
+		
+		_getch();
+
+		break;
+	case 2:
+		puts("Cache된 리스트를 출력합니다.");
+
+		_getch();
+		
+		printCache();
+		
+		puts("Cache된 리스트 출력 완료.");
+		
+		_getch();
+
+		break;
+	case 3:
+		break;
+	default:
+		puts("잘못된 입력입니다.");
+		
+		_getch();
+
+		break;
+	}
+}
