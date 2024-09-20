@@ -98,6 +98,19 @@ void addData(const char* filename, USERDATA* userData)
 
 void AddNewNode(bool bNew, int key, const void* dataCache, unsigned int sizeOfData, unsigned int offset)
 {
+	// 중복된 key 확인
+	NODE* currentNode = g_HeadNode.Next;
+	while (currentNode != &g_TailNode)
+	{
+		if (currentNode->key == key)  // key 비교
+		{
+			puts("중복된 key를 발견하여 Cahce에 추가하지 않습니다.");
+			_getch();
+			return;
+		}
+		currentNode = currentNode->Next;
+	}
+
 	NODE* newNode = (NODE*)calloc(1, sizeof(NODE));
 	if (newNode == NULL)
 	{
