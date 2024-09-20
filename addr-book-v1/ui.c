@@ -118,7 +118,7 @@ void searchDataUi(void)
 	else if (input == 4)
 	{
 		searchBySQL();
-		_getch();
+		
 	}
 }
 
@@ -140,7 +140,7 @@ void commitDataUi(void)
 	}
 	else if (input == 2)
 	{
-		commitCancle();
+		commitCancel();
 	}
 	else if (input == 3)
 	{

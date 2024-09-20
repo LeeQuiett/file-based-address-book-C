@@ -1,8 +1,11 @@
 #pragma once
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <conio.h>
 #include "data.h"
 #include "main.h"
 
@@ -13,7 +16,7 @@ unsigned int g_listCount = 0;
 NODE g_HeadNode = { 0 };
 NODE g_TailNode = { 0 };
 
-void initializeList() 
+void initializeList()
 {
 	g_HeadNode.Next = &g_TailNode;
 	g_TailNode.Prev = &g_HeadNode;
@@ -93,8 +96,8 @@ void addData(const char* filename, USERDATA* userData)
 	}
 }
 
-void AddNewNode(bool bNew, int key,	const void* dataCache, unsigned int sizeOfData,	unsigned int offset)
-{	
+void AddNewNode(bool bNew, int key, const void* dataCache, unsigned int sizeOfData, unsigned int offset)
+{
 	NODE* newNode = (NODE*)calloc(1, sizeof(NODE));
 	if (newNode == NULL)
 	{
@@ -198,12 +201,12 @@ void commitData(void)
 			USERDATA* userData = (USERDATA*)current->dataCache;
 
 			puts("Commit! 파일에 저장을 시작합니다.");
-			
+
 			fwrite(userData, sizeof(USERDATA), 1, fp);
-			
+
 			phoneIndex[userData->phone] = g_endOffset;
 			current->offset = g_endOffset;
-			g_endOffset++;			
+			g_endOffset++;
 		}
 		current = current->Next;
 	}
@@ -213,12 +216,12 @@ void commitData(void)
 }
 
 // 커밋 취소하는 함수
-void commitCancle(void)
+void commitCancel(void)
 {
 	NODE* current = g_HeadNode.Next;
 	while (current != &g_TailNode)
 	{
-		if (current->offset = -1 && current->dataCache != NULL)
+		if (current->offset == -1 && current->dataCache != NULL)
 		{
 			NODE* Prev = current->Prev;
 			NODE* Next = current->Next;
@@ -243,7 +246,7 @@ void commitCancle(void)
 }
 
 // 전화번호로 검색하는 함수
-void searchByPhone() 
+void searchByPhone()
 {
 	int phone;
 	printf("검색할 전화번호를 010과 -를 제외하고 입력하세요: ");
@@ -377,7 +380,7 @@ void searchByName(void)
 void searchByAddr(void)
 {
 	char addr[100];
-	printf("검색할 이름을 입력하세요: ");
+	printf("검색할 주소를 입력하세요: ");
 	fgets(addr, sizeof(addr), stdin);
 	addr[strcspn(addr, "\n")] = '\0';
 
@@ -486,7 +489,7 @@ void searchBySQL(void)
 {
 	char query[200];
 	char query1[100], query2[100];
-	printf("쿼리 예: name=홍길동 and addr=서울시, phone=1230-1230 or addr=대전시\n\n");
+	printf("쿼리 예: name=홍길동 and addr=서울시, phone=12301230 or addr=대전시\n\n");
 	printf("쿼리를 입력하세요: ");
 	fgets(query, sizeof(query), stdin);
 	query[strcspn(query, "\n")] = '\0';
@@ -500,7 +503,66 @@ void searchBySQL(void)
 	{
 		char field[50], value[200];
 		// = 을 기준으로 문자열을 분리
-		sscanf(query, "%[^=]=%s", field, value);
+		sscanf_s(query, "%[^=]=%s", field, (unsigned int)sizeof(field), value, (unsigned int)sizeof(value));
+
+
+		FILE* fp = fopen(FILENAME, "rb");
+		if (fp == NULL)
+		{
+			puts("파일 개방 실패!");
+			_getch();
+			return;
+		}
+
+		USERDATA userData;
+		int foundFlag = 0;
+		int matchFlag = 0;
+
+		while (fread(&userData, sizeof(USERDATA), 1, fp))
+		{
+			foundFlag = 0;
+			if (strcmp(field, "name") == 0 && strcmp(userData.name, value) == 0)
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+			else if (strcmp(field, "phone") == 0 && userData.phone == atoi(value))
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+			else if (strcmp(field, "addr") == 0 && strcmp(userData.address, value) == 0)
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+
+			if (foundFlag) {
+				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");
+			}
+		}
+
+		if (matchFlag == 0)
+		{
+			puts("일치하는 항목을 찾지 못했습니다.");
+		}
+		fclose(fp);
+		_getch();
+	}
+
+	// 쿼리에 and가 1개 있는 경우
+	else if (and_count == 1 && or_count == 0)
+	{
+		parse_query(query, query1, query2, " and ");
+		printf("Query1: %s\n", query1);
+		printf("Query2: %s\n\n", query2);
+
+		char field[50], value[200];
+		char field2[50], value2[200];
+
+		sscanf_s(query1, "%[^=]=%s", field, (unsigned)sizeof(field), value, (unsigned)sizeof(value));
+		sscanf_s(query2, "%[^=]=%s", field2, (unsigned)sizeof(field2), value2, (unsigned)sizeof(value2));
 
 		FILE* fp = fopen(FILENAME, "rb");
 		if (fp == NULL)
@@ -515,29 +577,155 @@ void searchBySQL(void)
 
 		while (fread(&userData, sizeof(USERDATA), 1, fp))
 		{
-			if (strcmp(field, "name") == 0 && strcmp(userData.name, value) == 0)
-				foundFlag = 1;
-			else if (strcmp(field, "phone") == 0 && userData.phone == atoi(value))
-				foundFlag = 1;
-			else if (strcmp(field, "addr") == 0 && strcmp(userData.address, value) == 0)
-				foundFlag = 1;
+			int firstCondition = 0;
+			int secondCondition = 0;
 
-			if (foundFlag) {
+			// 첫 번째 조건 확인
+			if (strcmp(field, "name") == 0 && strcmp(userData.name, value) == 0)
+				firstCondition = 1;
+			else if (strcmp(field, "phone") == 0 && userData.phone == atoi(value))
+				firstCondition = 1;
+			else if (strcmp(field, "addr") == 0 && strcmp(userData.address, value) == 0)
+				firstCondition = 1;
+
+			// 두 번째 조건 확인
+			if (strcmp(field2, "name") == 0 && strcmp(userData.name, value2) == 0)
+				secondCondition = 1;
+			else if (strcmp(field2, "phone") == 0 && userData.phone == atoi(value2))
+				secondCondition = 1;
+			else if (strcmp(field2, "addr") == 0 && strcmp(userData.address, value2) == 0)
+				secondCondition = 1;
+
+			// 두 조건 모두 만족할 경우 출력
+			if (firstCondition && secondCondition)
+			{
+				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");
+				foundFlag = 1; // 일치하는 항목을 찾았음
+			}
+		}
+
+		if (foundFlag == 0)
+			puts("일치하는 항목을 찾지 못했습니다.");
+
+		fclose(fp);
+		_getch();
+	}
+
+
+	// 쿼리에 or가 1개 있는 경우
+	else if (and_count == 0 && or_count == 1)
+	{
+		parse_query(query, query1, query2, " or ");
+		printf("Query1: %s\n", query1);
+		printf("Query2: %s\n\n", query2);
+
+		char field[50], value[200];
+		char field2[50], value2[200];
+
+		sscanf_s(query1, "%[^=]=%s", field, (unsigned)sizeof(field), value, (unsigned)sizeof(value));
+		sscanf_s(query2, "%[^=]=%s", field2, (unsigned)sizeof(field2), value2, (unsigned)sizeof(value2));
+
+		FILE* fp = fopen(FILENAME, "rb");
+		if (fp == NULL)
+		{
+			puts("파일 개방 실패!");
+			_getch();
+			return;
+		}
+
+		USERDATA userData;
+		int foundFlag = 0;
+		int matchFlag = 0;
+
+		while (fread(&userData, sizeof(USERDATA), 1, fp))
+		{
+			foundFlag = 0;
+
+			// 첫 번째 조건 확인
+			if (strcmp(field, "name") == 0 && strcmp(userData.name, value) == 0)
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+			else if (strcmp(field, "phone") == 0 && userData.phone == atoi(value))
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+			else if (strcmp(field, "addr") == 0 && strcmp(userData.address, value) == 0)
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+
+			// 첫 번째 조건이 맞으면 데이터 출력
+			if (foundFlag)
+			{
+				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");
+			}
+
+			foundFlag = 0;  // 두 번째 조건을 위해 다시 초기화
+
+			// 두 번째 조건 확인
+			if (strcmp(field2, "name") == 0 && strcmp(userData.name, value2) == 0)
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+			else if (strcmp(field2, "phone") == 0 && userData.phone == atoi(value2))
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+			else if (strcmp(field2, "addr") == 0 && strcmp(userData.address, value2) == 0)
+			{
+				foundFlag = 1;
+				matchFlag = 1;
+			}
+
+			// 두 번째 조건이 맞으면 데이터 출력
+			if (foundFlag)
+			{
 				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
 				puts("파일에서 읽은 데이터입니다.\n");
 			}
 		}
 
-		if (foundFlag == 0)
-		{
+		if (matchFlag == 0)
 			puts("일치하는 항목을 찾지 못했습니다.");
-		}
+
 		fclose(fp);
 		_getch();
 	}
+
 }
 
-// 문자열 내 서브 문자열의 수를 카운트
+// 쿼리 파싱 함수
+void parse_query(const char* query, char* query1, char* query2, char* and_or)
+{
+	int pos = find_substring_position(query, and_or);
+	if (pos != -1)
+	{
+		strncpy(query1, query, pos);
+		query1[pos] = '\0';
+		strcpy(query2, query + pos + strlen(and_or));
+	}
+}
+
+// 서브 문자열의 위치를 검색하는 함수
+int find_substring_position(const char* str, const char* sub)
+{
+	const char* pos = strstr(str, sub);
+
+	if (pos != NULL)
+		return (int)(pos - str);
+	else
+		return -1;
+}
+
+// 문자열 내 서브 문자열의 수를 카운트하는 함수
 int count_and_or(const char* str, const char* word)
 {
 	int count = 0;
