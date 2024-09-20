@@ -163,7 +163,12 @@ void printData(const char* filename)
 	{
 		//printf("%d\t%s\t%s\n", userData.phone, userData.name, userData.address);
 		//printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData.phone, userData.name, userData.address);
-		printUserData(&userData, 1);
+		
+		// "deleted"인 경우 출력하지 않음
+		if (strcmp(userData.name, "deleted") != 0 && strcmp(userData.address, "deleted") != 0)
+		{
+			printUserData(&userData, 1);
+		}
 	}
 	fclose(fp);
 }
