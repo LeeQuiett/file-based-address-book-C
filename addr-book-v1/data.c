@@ -292,6 +292,9 @@ void commitCancel(void)
 	_getch();
 }
 
+// 전화번호로 삭제하는 함수
+
+
 // 전화번호로 검색하는 함수
 void searchByPhone()
 {

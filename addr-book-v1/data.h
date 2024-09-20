@@ -48,3 +48,4 @@ int count_and_or(const char* str, const char* word);
 void parse_query(const char* query, char* query1, char* query2, char* and_or);
 int find_substring_position(const char* str, const char* sub);
 void deleteList(void);
+void deleteByPhone(void);

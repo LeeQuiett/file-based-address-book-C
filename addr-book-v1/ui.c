@@ -37,6 +37,7 @@ void eventLoopRun(void)
 			printDataUi();
 			break;
 		case REMOVE:
+			deleteDataUi();
 			break;
 		case COMMIT:
 			commitDataUi();
@@ -50,9 +51,34 @@ void eventLoopRun(void)
 	puts("프로그램을 종료합니다.");
 }
 
+
+
+void deleteDataUi()
+{
+	puts("삭제하려면 PK값인 전화번호를 입력해야합니다!");
+	printf("[1] 들어가기 [2] 돌아가기: ");
+
+	int input;
+	if (scanf_s("%d%*c", &input) != 1)
+	{
+		puts("잘못된 입력입니다.");
+		_getch();
+		return;
+	}
+
+	if (input == 1)
+	{
+
+	}
+	else
+	{
+		return;
+	}
+}
+
 void searchDataUi(void)
 {
-	puts("전화번호로 검색 시 O(n)의 시간복잡도로 검색이 가능합니다!");
+	puts("전화번호로 검색 시 O(1)의 시간복잡도로 검색이 가능합니다!");
 	printf("[1] 이름으로 검색 [2] 전화번호로 검색 [3] 주소로 검색 [4] SQL로 검색 [5] 돌아가기: ");
 	int input;
 	if (scanf_s("%d%*c", &input) != 1)
@@ -88,7 +114,7 @@ void searchDataUi(void)
 	}
 	else if (input == 2)
 	{
-		puts("O(n)의 시간복잡도를 갖는 전화번호 검색을 선택하셨군요^~^");
+		puts("O(1)의 시간복잡도를 갖는 전화번호 검색을 선택하셨군요^~^");
 		searchByPhone();
 	}
 

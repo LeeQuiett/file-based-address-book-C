@@ -11,11 +11,11 @@ int main(void)
 
 	initializeIndex(FILENAME);
 
-	//testPrintIndex();
+	//testPrintIndex(); 테스트 코드
 
 	initializeList();
 
-	//testPrintList();
+	//testPrintList(); 테스트 코드
 	
 	eventLoopRun();
 

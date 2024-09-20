@@ -13,3 +13,4 @@ void printDataUi(void);
 void commitDataUi(void);
 void searchDataUi(void);
 void printUserData(USERDATA* userData, int formatSelect);
+void deleteDataUi(void);
