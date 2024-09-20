@@ -700,6 +700,13 @@ void searchBySQL(void)
 		_getch();
 	}
 
+	// 쿼리에 and나 or가 1개 이상일 경우
+	else
+	{
+		puts("아직 지원하지 않는 명령어 입니다.");
+		_getch();
+	}
+
 }
 
 // 쿼리 파싱 함수
