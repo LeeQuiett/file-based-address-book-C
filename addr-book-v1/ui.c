@@ -12,7 +12,7 @@ MENU printMenu(void)
 	MENU input = 0;
 
 	system("cls");
-	printf("[1] 추가\t[2] 검색\t[3] 출력\t[4] 제거\t[5] 커밋\t[0] 나가기\n");
+	printf("[1] 추가\t[2] 검색\t[3] 출력\t[4] 제거\t[5] 커밋\t[6] 디스크 조각모음\t[0] 나가기\n");
 	scanf_s("%d%*c", &input);
 	//while (getchar() != '\n');
 
