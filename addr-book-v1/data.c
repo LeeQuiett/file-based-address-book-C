@@ -293,7 +293,91 @@ void commitCancel(void)
 }
 
 // 전화번호로 삭제하는 함수
+void deleteByPhone()
+{
+	int phone;
+	printf("삭제할 전화번호를 010과 -를 제외하고 입력하세요: ");
+	if (scanf_s("%d%*c", &phone) != 1)
+	{
+		puts("잘못된 입력입니다.");
+		_getch();
+		return;
+	}
 
+	// phoneIndex에서 전화번호를 통해 오프셋을 찾음
+	int offset = phoneIndex[phone];
+
+	// 오프셋이 유효한지 확인 (초기화되지 않았을 경우는 -1 사용)
+	if (offset == -1)
+	{
+		puts("일치하는 전화번호가 없습니다.");
+		_getch();
+		return;
+	}
+
+	// 파일에서 오프셋을 기반으로 USERDATA 읽기
+	FILE* fp = fopen(FILENAME, "rb+");
+	if (fp == NULL)
+	{
+		puts("파일 개방 실패");
+		return;
+	}
+
+	// 해당 오프셋의 위치로 이동
+	if (fseek(fp, offset * sizeof(USERDATA), SEEK_SET) != 0)
+	{
+		puts("파일 위치 이동 실패!");
+		fclose(fp);
+		return;
+	}
+
+	// 데이터 읽기
+	USERDATA userData;
+	if (fread(&userData, sizeof(USERDATA), 1, fp) == 1)
+	{
+		// 데이터 출력
+		printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n", userData.phone, userData.name, userData.address);
+
+		// 수정 여부 확인
+		printf("데이터를 삭제하시겠습니까? [1] 예 [2] 아니오: ");
+		int modifyInput;
+		if (scanf_s("%d%*c", &modifyInput) != 1 || modifyInput != 1)
+		{
+			puts("삭제를 취소했습니다.");
+			fclose(fp);
+			return;
+		}
+
+		strcpy(userData.name, "deleted");
+		strcpy(userData.address, "deleted");
+		phoneIndex[phone] = -1;
+
+		// 파일 오프셋으로 이동
+		if (fseek(fp, offset * sizeof(USERDATA), SEEK_SET) != 0)
+		{
+			puts("파일 위치 이동 실패!");
+			fclose(fp);
+			_getch();
+			return;
+		}
+
+		// 수정된 데이터 덮어쓰기
+		if (fwrite(&userData, sizeof(USERDATA), 1, fp) != 1)
+		{
+			puts("데이터 삭제 실패!");
+		}
+		else
+		{
+			puts("데이터가 성공적으로 삭제되었습니다.");
+		}
+	}
+	else
+	{
+		puts("데이터 읽기 실패!");
+	}
+	fclose(fp);
+	_getch();
+}
 
 // 전화번호로 검색하는 함수
 void searchByPhone()

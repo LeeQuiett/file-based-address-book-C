@@ -68,7 +68,7 @@ void deleteDataUi()
 
 	if (input == 1)
 	{
-
+		deleteByPhone();
 	}
 	else
 	{
