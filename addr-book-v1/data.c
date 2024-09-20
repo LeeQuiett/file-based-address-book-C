@@ -517,6 +517,7 @@ void searchBySQL(void)
 		USERDATA userData;
 		int foundFlag = 0;
 		int matchFlag = 0;
+		int offset = 0;
 
 		while (fread(&userData, sizeof(USERDATA), 1, fp))
 		{
@@ -540,7 +541,11 @@ void searchBySQL(void)
 			if (foundFlag) {
 				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
 				puts("파일에서 읽은 데이터입니다.\n");
+
+				// 일치하는 데이터는 캐시에 추가
+				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
 			}
+			offset++;
 		}
 
 		if (matchFlag == 0)
@@ -574,6 +579,7 @@ void searchBySQL(void)
 
 		USERDATA userData;
 		int foundFlag = 0;
+		int offset = 0;
 
 		while (fread(&userData, sizeof(USERDATA), 1, fp))
 		{
@@ -602,7 +608,11 @@ void searchBySQL(void)
 				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
 				puts("파일에서 읽은 데이터입니다.\n");
 				foundFlag = 1; // 일치하는 항목을 찾았음
+
+				// 일치하는 데이터는 캐시에 추가
+				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
 			}
+			offset++;
 		}
 
 		if (foundFlag == 0)
@@ -637,6 +647,7 @@ void searchBySQL(void)
 		USERDATA userData;
 		int foundFlag = 0;
 		int matchFlag = 0;
+		int offset = 0;
 
 		while (fread(&userData, sizeof(USERDATA), 1, fp))
 		{
@@ -664,6 +675,9 @@ void searchBySQL(void)
 			{
 				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
 				puts("파일에서 읽은 데이터입니다.\n");
+
+				// 일치하는 데이터는 캐시에 추가
+				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
 			}
 
 			foundFlag = 0;  // 두 번째 조건을 위해 다시 초기화
@@ -690,7 +704,11 @@ void searchBySQL(void)
 			{
 				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
 				puts("파일에서 읽은 데이터입니다.\n");
+
+				// 일치하는 데이터는 캐시에 추가
+				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
 			}
+			offset++;
 		}
 
 		if (matchFlag == 0)

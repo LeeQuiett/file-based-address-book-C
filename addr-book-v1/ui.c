@@ -117,8 +117,7 @@ void searchDataUi(void)
 	}
 	else if (input == 4)
 	{
-		searchBySQL();
-		
+		searchBySQL();		
 	}
 }
 
