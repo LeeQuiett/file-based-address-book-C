@@ -119,8 +119,31 @@ void searchDataUi(void)
 	{
 		searchBySQL();		
 	}
+
+	else
+	{
+		return;
+	}
 }
 
+void printUserData(USERDATA* userData, int formatSelect)
+{
+	switch (formatSelect)
+	{
+	case 1:
+		printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);
+		break;
+	case 2:
+		printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData->phone, userData->name, userData->address);
+		puts("파일에서 읽은 데이터입니다.\n");
+		break;
+	case 3:
+		printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData->phone, userData->name, userData->address);
+		break;
+	default:
+		break;
+	}
+}
 
 void commitDataUi(void)
 {

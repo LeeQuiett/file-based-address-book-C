@@ -8,6 +8,7 @@
 #include <conio.h>
 #include "data.h"
 #include "main.h"
+#include "ui.h"
 
 //unsigned int g_offset = 0;
 unsigned int g_endOffset = 0;
@@ -161,7 +162,8 @@ void printData(const char* filename)
 	while (fread(&userData, sizeof(USERDATA), 1, fp))
 	{
 		//printf("%d\t%s\t%s\n", userData.phone, userData.name, userData.address);
-		printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData.phone, userData.name, userData.address);
+		//printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData.phone, userData.name, userData.address);
+		printUserData(&userData, 1);
 	}
 	fclose(fp);
 }
@@ -175,7 +177,8 @@ void printCache()
 		if (current->dataCache != NULL)
 		{
 			USERDATA* userData = (USERDATA*)current->dataCache;
-			printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData->phone, userData->name, userData->address);
+			/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData->phone, userData->name, userData->address);*/
+			printUserData(userData, 3);
 			if (current->offset != -1)
 			{
 				if (current->bNew == true)
@@ -226,6 +229,37 @@ void commitData(void)
 	fclose(fp);
 	puts("Commit! 완료되었습니다.");
 	_getch();
+}
+
+// 프로그램 종료 시 메모리 해제 하는 함수
+
+void deleteList(void)
+{
+	NODE* current = g_HeadNode.Next;
+	while (current != &g_TailNode)
+	{
+		if (current->offset == -1 && current->dataCache != NULL)
+		{
+			NODE* Prev = current->Prev;
+			NODE* Next = current->Next;
+
+			Prev->Next = current->Next;
+			Next->Prev = current->Prev;
+
+			free(current->dataCache);
+			free(current);
+
+			--g_listCount;
+
+			current = Next;
+		}
+		else
+		{
+			current = current->Next;
+		}
+	}
+	// puts("커밋 취소가 완료되었습니다.");
+	//_getch();
 }
 
 // 커밋 취소하는 함수
@@ -372,8 +406,9 @@ void searchByName(void)
 	{
 		if (strcmp(userData.name, name) == 0)
 		{
-			printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-			puts("파일에서 읽은 데이터입니다.\n");
+			/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+			puts("파일에서 읽은 데이터입니다.\n");*/
+			printUserData(&userData, 2);
 
 			// 일치하는 데이터는 캐시에 추가
 			AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
@@ -411,8 +446,9 @@ void searchByAddr(void)
 	{
 		if (strcmp(userData.address, addr) == 0)
 		{
-			printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-			puts("파일에서 읽은 데이터입니다.\n");
+			/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+			puts("파일에서 읽은 데이터입니다.\n");*/
+			printUserData(&userData, 2);
 
 			// 일치하는 데이터는 캐시에 추가
 			AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
@@ -448,7 +484,8 @@ int searchByNameFromCache()
 
 			if (strcmp(userData->name, name) == 0)
 			{
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);
+				/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);*/
+				printUserData(userData, 1);
 				foundFlag = 1;
 			}
 		}
@@ -482,7 +519,8 @@ int searchByAddrFromCache()
 
 			if (strcmp(userData->address, addr) == 0)
 			{
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);
+				/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s\n\n", userData->phone, userData->name, userData->address);*/
+				printUserData(userData, 1);
 				foundFlag = 1;
 			}
 		}
@@ -552,8 +590,9 @@ void searchBySQL(void)
 			}
 
 			if (foundFlag) {
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-				puts("파일에서 읽은 데이터입니다.\n");
+				/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");*/
+				printUserData(&userData, 2);
 
 				// 일치하는 데이터는 캐시에 추가
 				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
@@ -618,8 +657,9 @@ void searchBySQL(void)
 			// 두 조건 모두 만족할 경우 출력
 			if (firstCondition && secondCondition)
 			{
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-				puts("파일에서 읽은 데이터입니다.\n");
+				/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");*/
+				printUserData(&userData, 2);
 				foundFlag = 1; // 일치하는 항목을 찾았음
 
 				// 일치하는 데이터는 캐시에 추가
@@ -686,8 +726,9 @@ void searchBySQL(void)
 			// 첫 번째 조건이 맞으면 데이터 출력
 			if (foundFlag)
 			{
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-				puts("파일에서 읽은 데이터입니다.\n");
+				/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");*/
+				printUserData(&userData, 2);
 
 				// 일치하는 데이터는 캐시에 추가
 				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);
@@ -715,8 +756,9 @@ void searchBySQL(void)
 			// 두 번째 조건이 맞으면 데이터 출력
 			if (foundFlag)
 			{
-				printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
-				puts("파일에서 읽은 데이터입니다.\n");
+				/*printf("전화번호: %-15d || 이름: %s \t|| 주소: %-30s || ", userData.phone, userData.name, userData.address);
+				puts("파일에서 읽은 데이터입니다.\n");*/
+				printUserData(&userData, 2);
 
 				// 일치하는 데이터는 캐시에 추가
 				AddNewNode(false, userData.phone, &userData, sizeof(USERDATA), offset);

@@ -19,5 +19,7 @@ int main(void)
 	
 	eventLoopRun();
 
+	deleteList();
+
 	return 0;
 }

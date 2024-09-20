@@ -1,4 +1,5 @@
 #pragma once
+#include "data.h"
 
 typedef enum MENU
 {
@@ -11,3 +12,4 @@ void addDataUi(void);
 void printDataUi(void);
 void commitDataUi(void);
 void searchDataUi(void);
+void printUserData(USERDATA* userData, int formatSelect);
