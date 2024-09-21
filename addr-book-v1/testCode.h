@@ -15,3 +15,4 @@ void testPrintList();
 void load_data_from_file(Addr* records, int num_records, const char* filename);
 void print_records(const Addr* records, int num_records);
 void testPrintList();
+void printAllDataWithDeletedData(const char* filename);

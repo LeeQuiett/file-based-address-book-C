@@ -40,6 +40,11 @@ int* allocateMemoryForPhone(size_t size)
 	return ptr;
 }
 
+void defragmentData(const char* filename)
+{
+	USERDATA userData;
+}
+
 void initializeIndex(const char* filename)
 {
 	printf("인덱스를 초기화 중입니다.\n");

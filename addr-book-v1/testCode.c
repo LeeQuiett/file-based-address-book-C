@@ -56,3 +56,23 @@ void testPrintList()
     _getch();
     return 0;
 }
+
+// deleted 마킹한 데이터까지 출력 함수
+void printAllDataWithDeletedData(const char* filename)
+{
+	USERDATA userData;
+
+	FILE* fp = fopen(filename, "rb");
+	if (fp == NULL)
+	{
+		puts("파일 개방 실패!");
+		return;
+	}
+
+	while (fread(&userData, sizeof(USERDATA), 1, fp))
+	{
+			printUserData(&userData, 1);			
+	}
+		fclose(fp);
+		_getch();
+}
