@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <Windows.h>
+#include <io.h>
 #include "data.h"
 #include "main.h"
 #include "ui.h"
@@ -40,9 +42,89 @@ int* allocateMemoryForPhone(size_t size)
 	return ptr;
 }
 
-void defragmentData(const char* filename)
+// 디스크 조각모음 함수
+void defragmentData()
 {
 	USERDATA userData;
+	FILE* fp = fopen(FILENAME, "rb+");
+	if (fp == NULL)
+	{
+		puts("파일 개방 실패!");
+		return;
+	}
+
+	// 삭제된 데이터의 오프셋을 저장할 배열
+	unsigned int deletedOffsets[100];
+	int deletedCount = 0;
+
+	// 파일을 순차적으로 읽어 삭제된 데이터의 오프셋 기록
+	unsigned int offset;
+	while (fread(&userData, sizeof(USERDATA), 1, fp))
+	{
+		if (strcmp(userData.name, "deleted") == 0)
+		{
+			offset = ftell(fp) - sizeof(USERDATA);
+			deletedOffsets[deletedCount++] = offset;
+		}
+	}
+
+	// 파일의 끝 위치 저장
+	fseek(fp, 0, SEEK_END);
+	unsigned int endOffset = ftell(fp);
+
+	// 삭제된 레코드의 위치에, 파일의 끝에서 데이터를 가져와 채워넣음
+	for (int i = 0; i < deletedCount; i++)
+	{
+		if (endOffset > deletedOffsets[i])
+		{
+			// 파일 끝에서 한 레코드 읽기
+			endOffset -= sizeof(USERDATA);
+			fseek(fp, endOffset, SEEK_SET);
+			fread(&userData, sizeof(USERDATA), 1, fp);
+
+			// 삭제된 위치로 이동하여 덮어쓰기
+			fseek(fp, deletedOffsets[i], SEEK_SET);
+			fwrite(&userData, sizeof(USERDATA), 1, fp);
+		}
+	}
+
+	// 루프 종료 후, 마지막 레코드가 삭제된 상태인지 확인
+	fseek(fp, endOffset, SEEK_SET);
+	fread(&userData, sizeof(USERDATA), 1, fp);
+	if (strcmp(userData.name, "deleted") == 0)
+	{
+		// 파일 끝에 있는 레코드가 삭제된 상태면 endOffset을 한 레코드 크기만큼 더 줄임
+		endOffset -= sizeof(USERDATA);
+	}
+
+	// 파일의 끝을 업데이트
+	// unix용 함수
+	//ftruncate(fileno(fp), endOffset);
+
+	// windows용 함수
+	// 파일 크기를 endOffset까지로 설정 (파일의 남은 부분 제거)
+	int fileDescriptor = _fileno(fp);
+	HANDLE hFile = (HANDLE)_get_osfhandle(fileDescriptor);
+
+	// 파일 포인터를 endOffset으로 이동
+	if (SetFilePointer(hFile, endOffset, NULL, FILE_BEGIN) == INVALID_SET_FILE_POINTER)
+	{
+		printf("파일 포인터 이동 실패\n");
+		fclose(fp);
+		return;
+	}
+
+	// 파일의 끝을 현재 포인터 위치로 설정
+	if (!SetEndOfFile(hFile))
+	{
+		printf("파일 크기 변경 실패\n");
+		fclose(fp);
+		return;
+	}
+
+	fclose(fp);
+	puts("디스크 조각모음이 완료되었습니다.");
+	_getch();
 }
 
 void initializeIndex(const char* filename)

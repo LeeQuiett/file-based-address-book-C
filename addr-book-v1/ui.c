@@ -42,6 +42,9 @@ void eventLoopRun(void)
 		case COMMIT:
 			commitDataUi();
 			break;
+		case DEFRAGMENT:
+			defragmentData();
+			break;
 		default:
 			puts("잘못된 입력입니다. 다시 입력해 주세요.");
 			_getch();

@@ -11,13 +11,13 @@ int main(void)
 
 	initializeIndex(FILENAME);
 
-	//testPrintIndex(); 테스트 코드
+	//testPrintIndex(); //테스트 코드
 
 	initializeList();
 
-	//testPrintList(); 테스트 코드
+	//testPrintList(); //테스트 코드
 	
-	printAllDataWithDeletedData(FILENAME);
+	printAllDataWithDeletedData(FILENAME); //테스트 코드
 
 	eventLoopRun();
 
