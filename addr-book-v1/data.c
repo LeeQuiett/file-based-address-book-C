@@ -465,6 +465,19 @@ void searchByPhone()
 		}
 		else
 		{
+			// 캐시된 리스트 순회하며 수정 반영
+			NODE* currentNode = g_HeadNode.Next;
+			while (currentNode != &g_TailNode)
+			{
+				USERDATA* userNode = (USERDATA*)currentNode->dataCache;
+				if (userNode->phone == phone)
+				{
+					strcpy(userNode->address, userData.address);
+					strcpy(userNode->name, userData.name);
+				}
+				currentNode = currentNode->Next;
+			}
+
 			puts("데이터가 성공적으로 수정되었습니다.");
 		}
 	}
