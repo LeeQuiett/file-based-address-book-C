@@ -43,6 +43,7 @@ int* allocateMemoryForPhone(size_t size)
 }
 
 // 디스크 조각모음 함수
+// @TODO: 파일 끝의 데이터가 deleted 일 경우에 대한 예외 처리 구현
 void defragmentData()
 {
 	USERDATA userData;
