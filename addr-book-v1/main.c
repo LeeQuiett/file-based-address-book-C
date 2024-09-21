@@ -17,7 +17,7 @@ int main(void)
 
 	//testPrintList(); //테스트 코드
 	
-	printAllDataWithDeletedData(FILENAME); //테스트 코드
+	//printAllDataWithDeletedData(FILENAME); //테스트 코드
 
 	eventLoopRun();
 

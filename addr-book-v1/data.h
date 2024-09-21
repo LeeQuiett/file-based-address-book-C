@@ -1,9 +1,8 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
-//#define FILENAME "addr_book_10M.dat"
-//#define FILENAME "Tree_test_addr_book.dat"
-#define FILENAME "test_3_dummy.dat"
+#define FILENAME "test_850000_dummy.dat"
+//#define FILENAME "test_3_dummy.dat"
 #define TEMP_FILENAME "temp.dat"
 
 typedef struct USERDATA
