@@ -1,4 +1,6 @@
-# file-based-address-book
+# 프로젝트 개요
+
+이름, 주소, 전화번호를 관리할 수 있는 주소록 프로그램
 
 <details>
 <summary>ver 0: 초기 버전 README.md </summary>
@@ -719,9 +721,8 @@ void measure_execution_time(int first_or_last, char* str) {
 
 ---
 
-# 프로젝트 개요 및 구현 사항
+## 구현 사항
 
-- 이름, 주소, 전화번호를 관리할 수 있는 주소록 프로그램을 작성.
 - UI는 **Event Loop** 구조를 적용하여 구현했습니다.
 - **ADT**, 자료구조와 데이터를 분리했습니다.
 - **모든 주소록 데이터는 파일**로 저장했습니다.
