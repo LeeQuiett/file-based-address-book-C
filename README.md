@@ -743,6 +743,8 @@ void measure_execution_time(int first_or_last, char* str) {
   삭제된 데이터가 **마킹된 파일을 정리하기 위해 디스크 조각모음** 기능을 도입했습니다. 삭제된 레코드의 위치를 기록하고, 파일 끝의 유효한 데이터를 읽어와 덮어쓰는 방식으로 작동합니다.
 
 ## 구현 사항
+[![UTube](https://github.com/user-attachments/assets/f926a837-9240-44b9-a4a1-662e9f1cc279)](https://youtu.be/SmnIVUIg3vo)
+이미지를 클릭하면 유튜브로 이동합니다.
 
 - UI는 **Event Loop** 구조를 적용하여 구현했습니다.
 - **ADT**, 자료구조와 데이터를 분리했습니다.
